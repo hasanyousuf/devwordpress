@@ -1,0 +1,38 @@
+version: '2'
+
+services:
+
+  dev-mysql:
+    image: mysql:5.5.49
+    environment:
+      - MYSQL_ROOT_PASSWORD=developerdb
+    ports:
+      - "3306:3306"
+    command: mysqld --log=/tmp/m.log
+
+
+  dev-web:
+    build: web
+    ports:
+      - "80:80"
+    environment:
+      - VIRTUAL_HOST=in-web.dev.test,se-web.dev.test
+    links: 
+      - dev-mysql:mysql
+    image: dev-web-image
+    depends_on:
+      - "dev-mysql"
+    volumes:
+      - /User/hasan/hasant/:/var/www/html/wordpress
+
+
+  phpmyadmin:
+    image: corbinu/docker-phpmyadmin
+    links:
+      - dev-mysql:mysql
+    ports:
+      - 8181:80
+    environment:
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: developerdb
+      #- PMA_ARBITRARY=1
